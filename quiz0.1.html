@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Quiz Systeem</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color-scheme: light dark;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, #ffffff 0%, #dfe6f3 40%, #b8c3e0 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 420px;
+      padding: 24px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* --- START SCHERM / MENU --- */
+    .app-header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.2;
+    }
+
+    .app-sub {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .quiz-select-btn {
+      border: 0;
+      border-radius: 16px;
+      width: 100%;
+      padding: 16px;
+      text-align: left;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 16px 30px rgba(0,0,0,0.12);
+      transition: all 0.15s ease;
+      border: 2px solid transparent;
+    }
+
+    .quiz-select-btn:hover {
+      box-shadow: 0 20px 34px rgba(0,0,0,0.18);
+      transform: translateY(-2px);
+    }
+
+    .quiz-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #111827;
+      line-height: 1.3;
+    }
+
+    .quiz-desc {
+      font-size: 0.8rem;
+      color: #6b7280;
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    /* --- QUIZ SCHERM --- */
+    .quiz-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .quiz-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4b5563;
+      line-height: 1.2;
+    }
+
+    .quiz-progress {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .image-wrapper {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      display: none; /* alleen tonen als er een afbeelding is */
+    }
+
+    .image-wrapper img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #111827;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      line-height: 1.3;
+      font-weight: 500;
+      cursor: pointer;
+      background: #fff;
+      border: 2px solid transparent;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover {
+      box-shadow: 0 16px 28px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+
+    .option-btn.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #065f46;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #7f1d1d;
+    }
+
+    .feedback {
+      min-height: 1.4em;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .feedback.correct {
+      color: #065f46;
+    }
+
+    .feedback.wrong {
+      color: #7f1d1d;
+    }
+
+    .next-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .score-text {
+      font-size: 0.9rem;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .next-btn,
+    .restart-btn,
+    .back-btn {
+      appearance: none;
+      border: 0;
+      background: #4f46e5;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.2;
+      padding: 12px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(79,70,229,0.4);
+      transition: all 0.15s ease;
+    }
+
+    .next-btn[disabled] {
+      background: #9ca3af;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .next-btn:hover:not([disabled]),
+    .restart-btn:hover,
+    .back-btn:hover {
+      box-shadow: 0 18px 34px rgba(79,70,229,0.5);
+      transform: translateY(-1px);
+    }
+
+    .final-screen {
+      text-align: center;
+    }
+
+    .final-big {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .final-small {
+      font-size: 1rem;
+      color: #4b5563;
+      margin-bottom: 20px;
+    }
+
+    .actions-row-end {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 400px) {
+      .actions-row-end {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: radial-gradient(circle at 20% 20%, #1f2937 0%, #111827 70%);
+      }
+      .card {
+        background: rgba(31,41,55,0.8);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      }
+      .app-title { color: #f9fafb; }
+      .app-sub { color: #9ca3af; }
+      .quiz-select-btn {
+        background: #1f2937;
+        color: #f9fafb;
+      }
+      .quiz-name { color: #f9fafb; }
+      .quiz-desc { color: #9ca3af; }
+
+      .quiz-title { color: #e5e7eb; }
+      .quiz-progress { color: #9ca3af; }
+      .question-text { color: #f9fafb; }
+      .score-text { color: #e5e7eb; }
+      .final-big { color: #f9fafb; }
+      .final-small { color: #9ca3af; }
+      .option-btn {
+        background: #1f2937;
+        color: #f9fafb;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DIT IS HET HOOFDKAART ELEMENT, WE GEBRUIKEN JS OM DE INHOUD TE WISSELEN -->
+  <div class="card" id="app"></div>
+
+  <script>
+    /****************************************
+     * 1. HIER STAAN AL JE QUIZZES
+     ****************************************
+     Elke quiz heeft:
+     - title: naam in menu
+     - description: korte uitleg
+     - questions: array met vragen (zelfde structuur als eerder)
+    *****************************************/
+
+    const QUIZZES = {
+      bovenbeenmassage: {
+        title: "Bovenbeenmassage",
+        description: "Anatomie, technieken en veiligheid van bovenbeenmassage.",
+        questions: [
+          {
+            text: "Welke spier ligt aan de voorkant van het bovenbeen en wordt vaak gemasseerd bij een bovenbeenmassage?",
+            options: {
+              a: "Hamstrings",
+              b: "Quadriceps",
+              c: "Gluteus maximus",
+              d: "Adductoren"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/4/4b/Quadriceps_femoris.png"
+          },
+          {
+            text: "In welke richting werk je meestal bij een klassieke bovenbeenmassage?",
+            options: {
+              a: "Van proximaal naar distaal (van boven naar beneden)",
+              b: "Van distaal naar proximaal (van knie naar heup)",
+              c: "Kruislings over het been",
+              d: "Cirkelvormig zonder richting"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Massage_strokes_direction.png"
+          },
+          {
+            text: "Wat is het belangrijkste doel van effleurage (strijking) tijdens een bovenbeenmassage?",
+            options: {
+              a: "Spierversterking",
+              b: "Stimuleren van de bloedsomloop en ontspanning",
+              c: "Verhogen van spierspanning",
+              d: "Verkleinen van spiermassa"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Massage_technique_effleurage.png"
+          },
+          {
+            text: "Welke spieren bevinden zich aan de achterkant van het bovenbeen?",
+            options: {
+              a: "Quadriceps",
+              b: "Hamstrings",
+              c: "Gastrocnemius",
+              d: "Adductoren"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Hamstrings_muscles_back_of_thigh.png"
+          },
+          {
+            text: "Wat is een belangrijk aandachtspunt bij het masseren van de liesstreek?",
+            options: {
+              a: "Stevig doordrukken voor diep effect",
+              b: "Altijd vermijden of voorzichtig behandelen i.v.m. lymfeklieren",
+              c: "Snelle tapotementen uitvoeren",
+              d: "Wrijven tot roodheid zichtbaar is"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/5/56/Lymph_nodes_groin.png"
+          },
+          {
+            text: "Wat is de functie van petrissage (kneding) bij de bovenbeenmassage?",
+            options: {
+              a: "Verwarmen van de huid",
+              b: "Activeren van de zenuwuiteinden",
+              c: "Losmaken en versoepelen van spierweefsel",
+              d: "Afkoelen van de spieren"
+            },
+            correct: "c",
+            image: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Massage_kneading.png"
+          },
+          {
+            text: "Welke richting volgt de lymfestroom in het bovenbeen?",
+            options: {
+              a: "Van heup naar knie",
+              b: "Van knie naar lies",
+              c: "Van zijkant naar midden",
+              d: "Cirkelvormig"
+            },
+            correct: "b",
+            image: "https://upload.wikimedia.org/wikipedia/commons/8/84/Lymphatic_system_lower_limb.png"
+          },
+          {
+            text: "Wat is een goede indicatie om een bovenbeenmassage toe te passen?",
+            options: {
+              a: "Spiervermoeidheid of spanning in de bovenbenen",
+              b: "Open wond of blauwe plek",
+              c: "Spataderen in de lies",
+              d: "Trombose in de benen"
+            },
+            correct: "a",
+            image: "https://upload.wikimedia.org/wikipedia/commons/2/28/Thigh_muscles_front_back_diagram.png"
+          },
+          {
+            text: "Welke techniek gebruik je meestal aan het einde van een bovenbeenmassage om de cliënt te laten ontspannen?",
+            options: {
+              a: "Fricties",
+              b: "Petrissage",
+              c: "Effleurage",
+              d: "Tapotement"
+            },
+            correct: "c",
+            image: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Massage_technique_effleurage.png"
+          },
+          {
+            text: "Wat is belangrijk vóórdat je begint met een bovenbeenmassage?",
+            options: {
+              a: "Huid niet controleren, gewoon beginnen",
+              b: "Koud water gebruiken om de huid af te koelen",
+              c: "Nagaan of er contra-indicaties zijn zoals spataderen of wondjes",
+              d: "De cliënt vragen actief mee te bewegen"
+            },
+            correct: "c",
+            image: "https://upload.wikimedia.org/wikipedia/commons/e/e2/Massage_preparation.png"
+          }
+        ]
+      },
+
+        plaatsbepalende_uitdrukkingen: {
+    title: "Plaatsbepalende uitdrukkingen",
+    description: "Test je kennis van anatomische richtingen en liggingen (NGS-theorie).",
+    questions: [
+      {
+        text: "Wat betekent de term 'superior' in anatomische richting?",
+        options: {
+          a: "Aan de onderzijde gelegen",
+          b: "Aan de bovenzijde gelegen",
+          c: "Meer naar het midden toe",
+          d: "Aan de voorkant van het lichaam"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Anatomical_Directions.svg"
+      },
+      {
+        text: "Wat betekent 'inferior'?",
+        options: {
+          a: "Aan de onderzijde gelegen",
+          b: "Meer naar de zijkant",
+          c: "Dichter bij het hoofd",
+          d: "Aan de rugzijde"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Anatomical_Directions.svg"
+      },
+      {
+        text: "Wat betekent 'mediaal'?",
+        options: {
+          a: "Aan de buitenkant van het lichaam",
+          b: "Aan de binnenkant, dichter bij de middenlijn",
+          c: "Aan de voorkant",
+          d: "Meer naar de rugzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/7/72/Anatomical_Positions.png"
+      },
+      {
+        text: "Wat betekent 'lateraal'?",
+        options: {
+          a: "Dichter bij de lichaamsas",
+          b: "Verder van de lichaamsas af",
+          c: "Aan de onderzijde",
+          d: "Aan de bovenzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/7/72/Anatomical_Positions.png"
+      },
+      {
+        text: "Wat betekent 'anterior'?",
+        options: {
+          a: "Aan de voorkant van het lichaam",
+          b: "Aan de achterkant",
+          c: "Aan de bovenzijde",
+          d: "Aan de onderzijde"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/3/33/Anterior_posterior_labels.png"
+      },
+      {
+        text: "Wat betekent 'posterior'?",
+        options: {
+          a: "Aan de voorkant",
+          b: "Aan de achterkant van het lichaam",
+          c: "Aan de binnenkant",
+          d: "Aan de buitenkant"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/3/33/Anterior_posterior_labels.png"
+      },
+      {
+        text: "Wat betekent 'ventraal' bij de mens?",
+        options: {
+          a: "Aan de buikzijde",
+          b: "Aan de rugzijde",
+          c: "Aan de zijkant",
+          d: "Aan de onderzijde"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Body_planes.svg"
+      },
+      {
+        text: "Wat betekent 'dorsaal' bij de mens?",
+        options: {
+          a: "Aan de buikzijde",
+          b: "Aan de rugzijde",
+          c: "Aan de onderzijde",
+          d: "Aan de bovenkant"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Body_planes.svg"
+      },
+      {
+        text: "Wat betekent 'proximaal'?",
+        options: {
+          a: "Dichter bij de romp gelegen",
+          b: "Verder van de romp af",
+          c: "Aan de buitenkant",
+          d: "Aan de binnenkant"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Proximal_distal_labels.png"
+      },
+      {
+        text: "Wat betekent 'distaal'?",
+        options: {
+          a: "Dichter bij de romp",
+          b: "Verder van de romp af gelegen",
+          c: "Aan de binnenkant",
+          d: "Aan de bovenzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Proximal_distal_labels.png"
+      },
+      {
+        text: "Wat betekent 'craniaal'?",
+        options: {
+          a: "Richting hoofd",
+          b: "Richting voeten",
+          c: "Aan de rugzijde",
+          d: "Aan de buikzijde"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/26/Cranial_caudal_labels.png"
+      },
+      {
+        text: "Wat betekent 'caudaal'?",
+        options: {
+          a: "Richting hoofd",
+          b: "Richting staart of voeten",
+          c: "Aan de buitenzijde",
+          d: "Aan de binnenzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/26/Cranial_caudal_labels.png"
+      },
+      {
+        text: "Wat betekent 'superficiaal'?",
+        options: {
+          a: "Diep in het lichaam",
+          b: "Aan het oppervlak gelegen",
+          c: "Aan de binnenzijde",
+          d: "Aan de buitenzijde van een gewricht"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Superficial_deep_diagram.png"
+      },
+      {
+        text: "Wat betekent 'profundus'?",
+        options: {
+          a: "Oppervlakkig",
+          b: "Diep gelegen",
+          c: "Aan de buitenkant",
+          d: "Aan de onderkant"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Superficial_deep_diagram.png"
+      },
+      {
+        text: "Welke uitdrukking hoort bij 'richting de lichaamsmiddellijn'?",
+        options: {
+          a: "Lateraal",
+          b: "Mediaal",
+          c: "Proximaal",
+          d: "Superficiaal"
+        },
+        correct: "b",
+        image: ""
+      },
+      {
+        text: "Welke uitdrukking betekent 'richting het midden van het lichaam'?",
+        options: {
+          a: "Centripetaal",
+          b: "Centrifugaal",
+          c: "Caudaal",
+          d: "Lateraal"
+        },
+        correct: "a",
+        image: ""
+      },
+      {
+        text: "Wat betekent 'Centrifugaal'?",
+        options: {
+          a: "Richting het centrum",
+          b: "Van het centrum af",
+          c: "Richting de huid",
+          d: "Diep in het lichaam"
+        },
+        correct: "b",
+        image: ""
+      },
+      {
+        text: "Welke term gebruik je voor 'aan de voetzoolzijde'?",
+        options: {
+          a: "Palmair",
+          b: "Plantair",
+          c: "Dorsaal",
+          d: "Ventraal"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/d/d7/Foot_anatomical_terms.png"
+      },
+      {
+        text: "Welke term hoort bij 'handpalmzijde'?",
+        options: {
+          a: "Palmair",
+          b: "Plantair",
+          c: "Dorsaal",
+          d: "Proximaal"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Hand_anatomy_labels.png"
+      },
+      {
+        text: "Wat betekent 'dorsaal' bij de hand?",
+        options: {
+          a: "Aan de handpalmzijde",
+          b: "Aan de handrugzijde",
+          c: "Aan de pinkzijde",
+          d: "Aan de duimzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Hand_anatomy_labels.png"
+      },
+      {
+        text: "Wat betekent 'radiaal'?",
+        options: {
+          a: "Aan de kant van de pink",
+          b: "Aan de kant van de duim (spaakbeen)",
+          c: "Aan de handpalmzijde",
+          d: "Aan de achterzijde van de arm"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Radius_and_ulna_diagram.png"
+      },
+      {
+        text: "Wat betekent 'ulnair'?",
+        options: {
+          a: "Aan de kant van de duim",
+          b: "Aan de kant van de pink (ellepijpzijde)",
+          c: "Aan de voorzijde van de onderarm",
+          d: "Aan de achterzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Radius_and_ulna_diagram.png"
+      },
+      {
+        text: "Wat betekent 'tibiaal'?",
+        options: {
+          a: "Aan de kant van het scheenbeen",
+          b: "Aan de kant van het kuitbeen",
+          c: "Aan de voetzoolzijde",
+          d: "Aan de rugzijde"
+        },
+        correct: "a",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Tibia_and_fibula_labels.png"
+      },
+      {
+        text: "Wat betekent 'fibulair' (of peroneaal)?",
+        options: {
+          a: "Aan de scheenbeenzijde",
+          b: "Aan de kuitbeenzijde",
+          c: "Aan de voet bovenkant",
+          d: "Aan de voetzoolzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Tibia_and_fibula_labels.png"
+      },
+      {
+        text: "Welke term gebruik je voor 'richting het hart' bij massage?",
+        options: {
+          a: "Centrifugaal",
+          b: "Centripetaal",
+          c: "Caudaal",
+          d: "Lateraal"
+        },
+        correct: "b",
+        image: ""
+      },
+      {
+        text: "Wat betekent 'transversaal vlak'?",
+        options: {
+          a: "Scheiding voor- en achterkant",
+          b: "Scheiding boven- en onderkant",
+          c: "Scheiding linker- en rechterkant",
+          d: "Scheiding binnen- en buitenkant"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Body_planes.svg"
+      },
+      {
+        text: "Wat betekent 'frontaal vlak'?",
+        options: {
+          a: "Scheiding linker- en rechterzijde",
+          b: "Scheiding voor- en achterzijde",
+          c: "Scheiding boven- en onderzijde",
+          d: "Scheiding binnen- en buitenzijde"
+        },
+        correct: "b",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Body_planes.svg"
+      },
+      {
+        text: "Wat betekent 'sagittaal vlak'?",
+        options: {
+          a: "Scheiding voor- en achterzijde",
+          b: "Scheiding boven- en onderzijde",
+          c: "Scheiding linker- en rechterzijde",
+          d: "Scheiding voorste en achterste deel van het hoofd"
+        },
+        correct: "c",
+        image: "https://upload.wikimedia.org/wikipedia/commons/1/1a/Body_planes.svg"
+      },
+      {
+        text: "Welke uitdrukking past bij 'richting de rug toe'?",
+        options: {
+          a: "Ventraal",
+          b: "Dorsaal",
+          c: "Proximaal",
+          d: "Centrifugaal"
+        },
+        correct: "b",
+        image: ""
+      },
+      {
+        text: "Welke richting hoort bij 'richting de schedel toe'?",
+        options: {
+          a: "Craniaal",
+          b: "Caudaal",
+          c: "Dorsaal",
+          d: "Ventraal"
+        },
+        correct: "a",
+        image: ""
+      }
+    ]
+  }
+
+    };
+
+
+    /****************************************
+     * 2. STATE (dit verandert tijdens gebruik)
+     *****************************************/
+    let currentQuizKey = null;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+
+    /****************************************
+     * 3. DOM
+     *****************************************/
+    const appEl = document.getElementById("app");
+
+
+    /****************************************
+     * 4. SCHERMEN RENDEREN
+     *****************************************/
+
+    // Hoofdmenu met alle quizzes
+    function renderMenu() {
+      currentQuizKey = null;
+      currentQuestionIndex = 0;
+      score = 0;
+      answered = false;
+
+      // Bouw lijst met quiz-knoppen
+      let quizButtonsHTML = "";
+      Object.entries(QUIZZES).forEach(([key, quizObj]) => {
+        quizButtonsHTML += `
+          <button class="quiz-select-btn" data-quizkey="${key}">
+            <div class="quiz-name">${quizObj.title}</div>
+            <div class="quiz-desc">${quizObj.description}</div>
+          </button>
+        `;
+      });
+
+      appEl.innerHTML = `
+        <div class="app-header">
+          <div class="app-title">Kies je quiz</div>
+          <div class="app-sub">Selecteer hieronder om te starten</div>
+        </div>
+        <div class="quiz-list">
+          ${quizButtonsHTML}
+        </div>
+      `;
+
+      // geef de knoppen logica
+      document.querySelectorAll("[data-quizkey]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-quizkey");
+          startQuiz(key);
+        });
+      });
+    }
+
+
+    // Quiz-scherm met vraag, opties, score, enz.
+    function renderQuizScreen() {
+      const quiz = QUIZZES[currentQuizKey];
+      const q = quiz.questions[currentQuestionIndex];
+
+      // progress tekst
+      const progressText = `Vraag ${currentQuestionIndex + 1} van ${quiz.questions.length}`;
+
+      // opties HTML
+      let optionsHTML = "";
+      Object.entries(q.options).forEach(([optKey, optText]) => {
+        optionsHTML += `
+          <button class="option-btn" data-option="${optKey}">
+            ${optKey.toUpperCase()}: ${optText}
+          </button>
+        `;
+      });
+
+      // afbeelding block (hide via inline style als leeg)
+      const showImage = q.image && q.image.trim() !== "";
+      const imageBlock = `
+        <div class="image-wrapper" style="${showImage ? "" : "display:none"}">
+          <img src="${q.image || ""}" alt="Afbeelding bij de vraag">
+        </div>
+      `;
+
+      appEl.innerHTML = `
+        <div class="quiz-header">
+          <div class="quiz-title">${quiz.title}</div>
+          <div class="quiz-progress">${progressText}</div>
+        </div>
+
+        ${imageBlock}
+
+        <div class="question-text">
+          ${q.text}
+        </div>
+
+        <div class="options" id="options-container">
+          ${optionsHTML}
+        </div>
+
+        <div class="feedback" id="feedback-area"></div>
+
+        <div class="next-row">
+          <div class="score-text" id="score-text">Score: ${score}</div>
+          <button class="next-btn" id="next-btn" disabled>Volgende ➜</button>
+        </div>
+
+        <button class="back-btn" id="back-menu-btn">← Terug naar menu</button>
+      `;
+
+      // events koppelen
+      document.getElementById("back-menu-btn").addEventListener("click", renderMenu);
+
+      const optionsContainerEl = document.getElementById("options-container");
+      const feedbackAreaEl = document.getElementById("feedback-area");
+      const scoreTextEl = document.getElementById("score-text");
+      const nextBtnEl = document.getElementById("next-btn");
+
+      answered = false;
+      nextBtnEl.disabled = true;
+
+      // klik op antwoord
+      optionsContainerEl.querySelectorAll(".option-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (answered) return;
+          answered = true;
+
+          const chosenKey = btn.getAttribute("data-option");
+          const correctKey = q.correct;
+
+          // style alle knoppen
+          optionsContainerEl.querySelectorAll(".option-btn").forEach(b => {
+            const key = b.getAttribute("data-option");
+            if (key === correctKey) {
+              b.classList.add("correct");
+            }
+            if (key === chosenKey && chosenKey !== correctKey) {
+              b.classList.add("wrong");
+            }
+            b.disabled = true;
+            b.style.cursor = "default";
+          });
+
+          // feedback + score
+          if (chosenKey === correctKey) {
+            score++;
+            feedbackAreaEl.textContent = "✅ Goed!";
+            feedbackAreaEl.classList.add("correct");
+          } else {
+            feedbackAreaEl.textContent = `❌ Fout. Het juiste antwoord is ${correctKey.toUpperCase()}.`;
+            feedbackAreaEl.classList.add("wrong");
+          }
+
+          scoreTextEl.textContent = `Score: ${score}`;
+          nextBtnEl.disabled = false;
+        });
+      });
+
+      // volgende vraag
+      nextBtnEl.addEventListener("click", () => {
+        const lastIndex = quiz.questions.length - 1;
+        if (currentQuestionIndex >= lastIndex) {
+          renderFinalScreen();
+        } else {
+          currentQuestionIndex++;
+          renderQuizScreen();
+        }
+      });
+    }
+
+
+    // Eindscherm met score + opnieuw + terug naar menu
+    function renderFinalScreen() {
+      const quiz = QUIZZES[currentQuizKey];
+      const totaal = quiz.questions.length;
+
+      appEl.innerHTML = `
+        <div class="final-screen">
+          <div class="final-big">Klaar! 🎉</div>
+          <div class="final-small">
+            Je eindscore is ${score} van de ${totaal}.
+            ${score === totaal ? "Perfect! 🔥" : ""}
+          </div>
+        </div>
+
+        <div class="actions-row-end">
+          <button class="restart-btn" id="restart-btn">Opnieuw deze quiz</button>
+          <button class="back-btn" id="back-menu-btn">← Terug naar menu</button>
+        </div>
+      `;
+
+      document.getElementById("restart-btn").addEventListener("click", () => {
+        // opnieuw zelfde quiz
+        score = 0;
+        currentQuestionIndex = 0;
+        answered = false;
+        renderQuizScreen();
+      });
+
+      document.getElementById("back-menu-btn").addEventListener("click", () => {
+        renderMenu();
+      });
+    }
+
+
+    /****************************************
+     * 5. FUNCTIES OM QUIZ TE STARTEN
+     *****************************************/
+    function startQuiz(quizKey) {
+      currentQuizKey = quizKey;
+      currentQuestionIndex = 0;
+      score = 0;
+      answered = false;
+      renderQuizScreen();
+    }
+
+    /****************************************
+     * 6. INIT: toon menu als eerste
+     *****************************************/
+    renderMenu();
+  </script>
+</body>
+</html>
+
