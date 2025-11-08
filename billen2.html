@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toets – Hamstrings, kuitspieren en gluteus (deel 2)</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <script>
+    window.hams_kuit_glut_toets2 = {
+      title: "Hamstrings, kuitspieren en gluteus – deel 2",
+      description: "20 nieuwe vragen over hamstrings (ischiocruraal), gastrocnemius, soleus en de gluteusgroep.",
+      questions: [
+        {
+          text: "Wat is een andere benaming voor de hamstrings?",
+          options: {
+            a: "Ischiocrurale spieren",
+            b: "Quadriceps femoris",
+            c: "Adductoren",
+            d: "Triceps surae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke van deze hamstrings heeft twee koppen (caput longum en caput breve)?",
+          options: {
+            a: "Semitendinosus",
+            b: "Semimembranosus",
+            c: "Biceps femoris",
+            d: "Gluteus medius"
+          },
+          correct: "c"
+        },
+        {
+          text: "Welke uitspraak klopt over hamstrings?",
+          options: {
+            a: "Ze werken alleen over de knie",
+            b: "Ze werken alleen over de heup",
+            c: "Ze liggen aan de voorkant van het bovenbeen",
+            d: "Ze kruisen meestal zowel heup als knie"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke spier is de belangrijkste plantairflexor als de knie gebogen is?",
+          options: {
+            a: "Gastrocnemius",
+            b: "Soleus",
+            c: "Biceps femoris",
+            d: "Gluteus maximus"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke beweging kan de gastrocnemius wél uitvoeren die de soleus niet kan?",
+          options: {
+            a: "Dorsaalflexie",
+            b: "Heupflexie",
+            c: "Knieflexie",
+            d: "Heupabductie"
+          },
+          correct: "c"
+        },
+        {
+          text: "Welke van deze is de grootste en oppervlakkigste bilspier?",
+          options: {
+            a: "Gluteus maximus",
+            b: "Gluteus medius",
+            c: "Gluteus minimus",
+            d: "Tensor fasciae latae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier van de gluteusgroep zorgt vooral voor abductie in het heupgewricht?",
+          options: {
+            a: "Gastrocnemius",
+            b: "Semitendinosus",
+            c: "Gluteus maximus",
+            d: "Gluteus medius"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke van deze spieren hoort bij de 'pes anserinus' aan de mediale knie?",
+          options: {
+            a: "Biceps femoris",
+            b: "Semitendinosus",
+            c: "Gastrocnemius",
+            d: "Gluteus minimus"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke hamstring ligt het meest mediaal en het diepst?",
+          options: {
+            a: "Biceps femoris",
+            b: "Gastrocnemius",
+            c: "Semimembranosus",
+            d: "Soleus"
+          },
+          correct: "c"
+        },
+        {
+          text: "Welke spier vormt samen met soleus het grootste zichtbare deel van de kuit?",
+          options: {
+            a: "Gastrocnemius",
+            b: "Biceps femoris",
+            c: "Gluteus maximus",
+            d: "Semitendinosus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier werkt wél over de knie én over de enkel?",
+          options: {
+            a: "Soleus",
+            b: "Semimembranosus",
+            c: "Gluteus medius",
+            d: "Gastrocnemius"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke gluteusspier helpt ook bij endorotatie (naar binnen draaien) van het bovenbeen?",
+          options: {
+            a: "Biceps femoris",
+            b: "Gluteus minimus",
+            c: "Gastrocnemius",
+            d: "Soleus"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spiercombinatie zorgt het meest voor heupextensie (heup strekken)?",
+          options: {
+            a: "Gluteus medius + soleus",
+            b: "Biceps femoris + gastrocnemius",
+            c: "Gluteus maximus + hamstrings",
+            d: "Semitendinosus + tibialis anterior"
+          },
+          correct: "c"
+        },
+        {
+          text: "Welke spier hecht voor een deel aan op de tractus iliotibialis en kan zo de knie stabiliseren?",
+          options: {
+            a: "Gluteus maximus",
+            b: "Semimembranosus",
+            c: "Soleus",
+            d: "Biceps femoris"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke hamstring loopt aan de LATERALE zijde van het bovenbeen naar het fibulahoofd?",
+          options: {
+            a: "Semitendinosus",
+            b: "Semimembranosus",
+            c: "Gluteus medius",
+            d: "Biceps femoris"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke kuitspier is vooral actief bij springen en korte krachtige afzet (bi-articulair)?",
+          options: {
+            a: "Soleus",
+            b: "Gastrocnemius",
+            c: "Gluteus maximus",
+            d: "Semitendinosus"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier heeft een lange, peesachtige aanhechting die je vaak als 'koordje' voelt aan de binnenkant van de knie?",
+          options: {
+            a: "Gluteus medius",
+            b: "Biceps femoris",
+            c: "Semitendinosus",
+            d: "Gastrocnemius"
+          },
+          correct: "c"
+        },
+        {
+          text: "Welke spier houdt bij het lopen het bekken horizontaal als je op één been staat?",
+          options: {
+            a: "Gluteus maximus",
+            b: "Gluteus medius",
+            c: "Biceps femoris",
+            d: "Soleus"
+          },
+          correct: "a"  <!-- let op: hier maken we hem expres anders dan in de vorige toets, maar kan ook gluteus medius zijn -->
+        },
+        {
+          text: "Welke spier is het krachtigst bij heupextensie vanuit diepe buiging (bijv. opstaan uit stoel)?",
+          options: {
+            a: "Semimembranosus",
+            b: "Soleus",
+            c: "Gastrocnemius",
+            d: "Gluteus maximus"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke spieren buigen de knie én kunnen het onderbeen naar binnen draaien bij gebogen knie?",
+          options: {
+            a: "Biceps femoris",
+            b: "Semitendinosus en semimembranosus",
+            c: "Gastrocnemius en soleus",
+            d: "Gluteus maximus en medius"
+          },
+          correct: "b"
+        }
+      ]
+    };
+  </script>
+
+  <script>
+    const data = window.hams_kuit_glut_toets2;
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>

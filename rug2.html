@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toets – Rugspieren (deel 2)</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <script>
+    window.rugspieren_toets_2 = {
+      title: "Rugspieren – deel 2",
+      description: "Nog 20 vragen over erector trunci, trapezius, rhomboideus, levator scapulae en latissimus dorsi.",
+      questions: [
+        {
+          text: "Welke spier ligt het diepst van deze lijst?",
+          options: {
+            a: "Rhomboideus major",
+            b: "Trapezius",
+            c: "Latissimus dorsi",
+            d: "Erector spinae (erector trunci)"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke spier kan de scapula zowel elevatie als rotatie naar boven laten doen (via bovenste vezels)?",
+          options: {
+            a: "Trapezius",
+            b: "Latissimus dorsi",
+            c: "Rhomboideus minor",
+            d: "Erector spinae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke twee spieren trekken de scapula naar de wervelkolom (retractie)?",
+          options: {
+            a: "Rhomboideus en middelste trapeziusvezels",
+            b: "Latissimus en erector spinae",
+            c: "Levator scapulae en latissimus",
+            d: "Rectus abdominis en trapezius"
+          },
+          correct: "a"
+        },
+        {
+          text: "Wat is een kenmerkende functie van de latissimus dorsi op de bovenarm?",
+          options: {
+            a: "Abductie",
+            b: "Adductie",
+            c: "Supinatie",
+            d: "Pronatie"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier helpt om de schouders ‘naar beneden te trekken’ (depressie van scapula)?",
+          options: {
+            a: "Onderste vezels van trapezius",
+            b: "Levator scapulae",
+            c: "Rhomboideus major",
+            d: "Erector spinae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier is het meest actief bij ‘schouders ophalen’?",
+          options: {
+            a: "Trapezius bovenste vezels",
+            b: "Latissimus dorsi",
+            c: "Erector spinae",
+            d: "Rhomboideus minor"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier kan de nek naar dezelfde kant laten buigen als hij eenzijdig aanspant?",
+          options: {
+            a: "Levator scapulae",
+            b: "Rhomboideus major",
+            c: "Latissimus dorsi",
+            d: "Erector spinae is dat nooit"
+          },
+          correct: "a"
+        },
+        {
+          text: "Wat gebeurt er als één zijde van de erector spinae aanspant?",
+          options: {
+            a: "Rotatie naar de andere zijde",
+            b: "Lateroflexie (zijwaarts buigen) naar dezelfde zijde",
+            c: "Flexie van de romp",
+            d: "Depressie van de scapula"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier ligt DIRECT onder de trapezius, tussen wervelkolom en scapula?",
+          options: {
+            a: "Rhomboideus major/minor",
+            b: "Latissimus dorsi",
+            c: "Erector spinae",
+            d: "Levator scapulae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier wordt vaak gebruikt bij klimmen en optrekken omdat hij de arm naar het lichaam toetrekt?",
+          options: {
+            a: "Latissimus dorsi",
+            b: "Rhomboideus minor",
+            c: "Levator scapulae",
+            d: "Trapezius onderste vezels"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier helpt de schouderbladen schuin omhoog te trekken vanuit de nekregio?",
+          options: {
+            a: "Levator scapulae",
+            b: "Erector spinae",
+            c: "Latissimus dorsi",
+            d: "Rectus abdominis"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier is het grootst in oppervlak van deze lijst?",
+          options: {
+            a: "Trapezius",
+            b: "Latissimus dorsi",
+            c: "Rhomboideus major",
+            d: "Levator scapulae"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier stabiliseert de scapula tegen de romp zodat andere spieren de arm kunnen bewegen?",
+          options: {
+            a: "Rhomboideus (major/minor)",
+            b: "Rectus abdominis",
+            c: "Sternocleidomastoideus",
+            d: "Gluteus maximus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier kan de wervelkolom NIET strekken?",
+          options: {
+            a: "Erector spinae",
+            b: "Latissimus dorsi (meestal niet primair)",
+            c: "Trapezius",
+            d: "Rhomboideus major"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welk deel van de trapezius zorgt vooral voor retractie van de scapula?",
+          options: {
+            a: "Middelste vezels",
+            b: "Bovenste vezels",
+            c: "Onderste vezels",
+            d: "Trapezius strekt alleen de nek"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier helpt bij diep inademen door de schoudergordel iets op te tillen?",
+          options: {
+            a: "Trapezius",
+            b: "Latissimus dorsi",
+            c: "Rhomboideus major",
+            d: "Erector spinae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier loopt van de onderrug, via de flank, naar de bovenarm?",
+          options: {
+            a: "Latissimus dorsi",
+            b: "Levator scapulae",
+            c: "Rhomboideus minor",
+            d: "Trapezius"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier is vooral belangrijk voor een stabiele, rechte houding bij staan?",
+          options: {
+            a: "Erector spinae",
+            b: "Levator scapulae",
+            c: "Rhomboideus minor",
+            d: "Latissimus dorsi"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier helpt de scapula licht naar binnen/omhoog te trekken en zit meer craniaal (hoger)?",
+          options: {
+            a: "Levator scapulae",
+            b: "Rhomboideus major",
+            c: "Latissimus dorsi",
+            d: "Erector spinae"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke combinatie is goed voor ‘schouderbladen naar achter en omlaag’?",
+          options: {
+            a: "Middelste + onderste trapezius",
+            b: "Latissimus + erector spinae",
+            c: "Levator scapulae + rhomboideus",
+            d: "Rectus abdominis + latissimus"
+          },
+          correct: "a"
+        }
+      ]
+    };
+  </script>
+
+  <script>
+    const data = window.rugspieren_toets_2;
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>
