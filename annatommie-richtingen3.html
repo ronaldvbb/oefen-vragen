@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bewegingstermen – Toets</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <!-- data op window zetten -->
+  <script>
+    window.bewegingstermen_toets = {
+      title: "Lichaamsvlakken en bewegingstermen",
+      description: "Toets je kennis van de anatomische vlakken en basisbewegingen.",
+      questions: [
+        {
+          text: "Wat is het sagittale vlak?",
+          options: {
+            a: "Vlak dat het lichaam in voor- en achterkant verdeelt",
+            b: "Vlak dat het lichaam in linker- en rechterhelft verdeelt",
+            c: "Vlak dat het lichaam in boven- en onderkant verdeelt",
+            d: "Vlak dat door het hart loopt"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat is het frontale (coronale) vlak?",
+          options: {
+            a: "Vlak dat het lichaam in voor- en achterkant verdeelt",
+            b: "Vlak dat het lichaam in links en rechts verdeelt",
+            c: "Vlak dat het lichaam schuin verdeelt",
+            d: "Vlak dat het lichaam in boven en onder verdeelt"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat is het transversale (horizontale) vlak?",
+          options: {
+            a: "Vlak dat door het midden van het hoofd loopt",
+            b: "Vlak dat het lichaam in boven- en onderkant verdeelt",
+            c: "Vlak dat het lichaam in links en rechts verdeelt",
+            d: "Vlak dat het lichaam in voor en achter verdeelt"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat betekent 'flexie'?",
+          options: {
+            a: "Buigen, hoek verkleinen",
+            b: "Strekken, hoek vergroten",
+            c: "Van het lichaam af bewegen",
+            d: "Naar het lichaam toe bewegen"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat betekent 'extensie'?",
+          options: {
+            a: "Buigen",
+            b: "Strekken",
+            c: "Roteren",
+            d: "Zijwaarts buigen"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat is 'abductie'?",
+          options: {
+            a: "Beweging naar de mediaanlijn toe",
+            b: "Beweging van de mediaanlijn af",
+            c: "Draaien naar buiten",
+            d: "Draaien naar binnen"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat is 'adductie'?",
+          options: {
+            a: "Beweging naar de mediaanlijn toe",
+            b: "Beweging van de mediaanlijn af",
+            c: "Beweging naar voren",
+            d: "Beweging naar achteren"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat betekent 'endorotatie'?",
+          options: {
+            a: "Rotatie naar binnen",
+            b: "Rotatie naar buiten",
+            c: "Buigen van de knie",
+            d: "Strekken van de arm"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat betekent 'exorotatie'?",
+          options: {
+            a: "Rotatie naar binnen",
+            b: "Rotatie naar buiten",
+            c: "Zijwaarts buigen",
+            d: "Cirkelbeweging"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Welke beweging hoort bij de nek als je 'ja' knikt?",
+          options: {
+            a: "Flexie en extensie",
+            b: "Rotatie",
+            c: "Lateroflexie",
+            d: "Abductie"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Welke beweging hoort bij ‘nee’ schudden met het hoofd?",
+          options: {
+            a: "Flexie",
+            b: "Extensie",
+            c: "Rotatie",
+            d: "Adductie"
+          },
+          correct: "c",
+          image: ""
+        },
+        {
+          text: "Wat is circumductie?",
+          options: {
+            a: "Een combinatie van flexie, extensie, abductie en adductie",
+            b: "Alleen buigen",
+            c: "Alleen roteren",
+            d: "Alleen strekken"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "In welk vlak vindt meestal abductie van de arm plaats?",
+          options: {
+            a: "Sagittaal vlak",
+            b: "Frontaal vlak",
+            c: "Transversaal vlak",
+            d: "Schuin vlak"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "In welk vlak vindt meestal flexie van de knie plaats?",
+          options: {
+            a: "Sagittaal vlak",
+            b: "Frontaal vlak",
+            c: "Transversaal vlak",
+            d: "Horizontaal vlak"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat is elevatie van de schouder?",
+          options: {
+            a: "Schouder omhoog brengen",
+            b: "Schouder omlaag brengen",
+            c: "Schouder naar voren brengen",
+            d: "Schouder naar achteren brengen"
+          },
+          correct: "a",
+          image: ""
+        },
+        {
+          text: "Wat is depressie van de schouder?",
+          options: {
+            a: "Schouder omhoog brengen",
+            b: "Schouder omlaag brengen",
+            c: "Schouder naar voren brengen",
+            d: "Schouder naar achteren brengen"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat is protractie van het schouderblad?",
+          options: {
+            a: "Schouderblad naar voren/omhoog",
+            b: "Schouderblad naar voren/om het lichaam heen",
+            c: "Schouderblad naar achteren",
+            d: "Schouderblad naar beneden"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Wat is retractie van het schouderblad?",
+          options: {
+            a: "Schouderblad naar voren",
+            b: "Schouderblad richting wervelkolom",
+            c: "Schouderblad omlaag",
+            d: "Schouderblad draaien"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Welke beweging maak je met de enkel bij ‘op de tenen staan’?",
+          options: {
+            a: "Dorsaalflexie",
+            b: "Plantairflexie",
+            c: "Inversie",
+            d: "Eversie"
+          },
+          correct: "b",
+          image: ""
+        },
+        {
+          text: "Welke beweging maak je met de enkel bij ‘voet omhoog trekken’?",
+          options: {
+            a: "Dorsaalflexie",
+            b: "Plantairflexie",
+            c: "Inversie",
+            d: "Pronatie"
+          },
+          correct: "a",
+          image: ""
+        }
+      ]
+    };
+  </script>
+
+  <script>
+    const data = window.bewegingstermen_toets;
+
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>

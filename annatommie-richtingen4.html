@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bewegingsvlakken – Basis Toets (20 vragen)</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <!-- DATA: 20 makkelijke vragen -->
+  <script>
+    window.bewegingstermen_toets = {
+      title: "Basis bewegingsvlakken",
+      description: "Makkelijke toets met 20 vragen over sagittaal, frontaal en transversaal vlak.",
+      questions: [
+        {
+          text: "Welk vlak verdeelt het lichaam in een linker- en rechterhelft?",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Schuin vlak" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Welk vlak verdeelt het lichaam in een voor- en achterkant?",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Mediaal vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Welk vlak verdeelt het lichaam in een boven- en onderkant?",
+          options: { a: "Transversaal (horizontaal) vlak", b: "Sagittaal vlak", c: "Frontaal vlak", d: "Longitudinaal vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "In welk vlak gebeurt meestal buigen en strekken (flexie/extensie)?",
+          options: { a: "Frontaal vlak", b: "Transversaal vlak", c: "Sagittaal vlak", d: "Geen vlak" },
+          correct: "c", image: ""
+        },
+        {
+          text: "In welk vlak gebeurt meestal zijwaarts heffen van de arm (abductie)?",
+          options: { a: "Transversaal vlak", b: "Frontaal vlak", c: "Sagittaal vlak", d: "Oblique vlak" },
+          correct: "b", image: ""
+        },
+        {
+          text: "In welk vlak vindt vooral rotatie plaats (bijv. hoofd draaien)?",
+          options: { a: "Sagittaal vlak", b: "Frontaal vlak", c: "Transversaal vlak", d: "Mediaal vlak" },
+          correct: "c", image: ""
+        },
+        {
+          text: "Je buigt je knie. In welk vlak beweeg je dan vooral?",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Craniaal vlak" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Je tilt je arm zijwaarts omhoog. In welk vlak is dat?",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Geen van allen" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoofd naar links en rechts draaien gebeurt vooral in…",
+          options: { a: "Transversaal vlak", b: "Sagittaal vlak", c: "Frontaal vlak", d: "Geen vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Een sit-up (romp voorover buigen) gebeurt in…",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Schuin vlak" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Armen opzij spreiden als bij een jumping jack is vooral…",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Diep vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Het lichaam in boven en onder verdelen heet ook wel…",
+          options: { a: "Horizontaal vlak", b: "Mediaanvlak", c: "Frontaal vlak", d: "Axiaalvlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Het midden-sagittale (mediaan) vlak…",
+          options: { a: "Loopt precies door het midden", b: "Is altijd schuin", c: "Is hetzelfde als frontaal", d: "Bestaat niet" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Welk vlak gebruik je om links van rechts te beschrijven?",
+          options: { a: "Sagittaal vlak", b: "Transversaal vlak", c: "Frontaal vlak", d: "Pariëtaal vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Een hockeyer die zijn bovenlichaam naar links draait maakt een beweging in…",
+          options: { a: "Transversaal vlak", b: "Frontaal vlak", c: "Sagittaal vlak", d: "Anterieur vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Zijwaarts buigen van de romp (lateroflexie) hoort meestal bij…",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Geen enkel vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Welk vlak is ook bekend als het coronale vlak?",
+          options: { a: "Frontaal vlak", b: "Sagittaal vlak", c: "Transversaal vlak", d: "Caudaal vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Welk vlak gebruik je als je een CT-scan van boven naar beneden bekijkt?",
+          options: { a: "Transversaal vlak", b: "Sagittaal vlak", c: "Frontaal vlak", d: "Mediaan vlak" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Een leraar zegt: ‘Beweeg in het sagittale vlak’. Welke beweging hoort daarbij?",
+          options: { a: "Arm opzij", b: "Arm naar voren/achter", c: "Hoofd draaien", d: "Schouder optrekken" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Welke van deze is géén van de drie basisvlakken?",
+          options: { a: "Sagittaal", b: "Frontaal", c: "Transversaal", d: "Diagonal (schuin)" },
+          correct: "d", image: ""
+        }
+      ]
+    };
+  </script>
+
+  <!-- ZELFDE RENDERER ALS JE ANDERE TOETS -->
+  <script>
+    const data = window.bewegingstermen_toets;
+
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        // reset markeringen
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        // vergrendel
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>

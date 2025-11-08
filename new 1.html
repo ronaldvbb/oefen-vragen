@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plaatsbepalende uitdrukkingen – Toets</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <!-- Zet de data op window.* zodat de renderer hem kan lezen -->
+  <script>
+    window.plaatsbepalende_uitdrukkingen = {
+      title: "Plaatsbepalende uitdrukkingen",
+      description: "Leer de belangrijkste richtingen van het menselijk lichaam.",
+      questions: [
+        { text: "Wat betekent 'superior'?",   options: { a: "Bovenkant", b: "Onderkant", c: "Achterkant", d: "Voorkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'inferior'?",   options: { a: "Bovenkant", b: "Onderkant", c: "Binnenkant", d: "Zijkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'mediaal'?",    options: { a: "Dicht bij het midden van het lichaam", b: "Ver van het midden af", c: "Aan de achterkant", d: "Aan de bovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'lateraal'?",   options: { a: "Aan de binnenkant", b: "Aan de zijkant", c: "Aan de onderkant", d: "Aan de bovenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'anterior'?",   options: { a: "Voorkant", b: "Achterkant", c: "Zijkant", d: "Bovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'posterior'?",  options: { a: "Voorkant", b: "Achterkant", c: "Binnenkant", d: "Buitenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'ventraal' bij mensen?", options: { a: "Aan de buikzijde", b: "Aan de rugzijde", c: "Aan de zijkant", d: "Aan de onderkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'dorsaal' bij mensen?",  options: { a: "Aan de rugzijde", b: "Aan de buikzijde", c: "Aan de bovenkant", d: "Aan de onderkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'proximaal'?",  options: { a: "Dicht bij de romp", b: "Ver van de romp", c: "Aan de voorkant", d: "Aan de zijkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'distaal'?",    options: { a: "Dicht bij de romp", b: "Ver van de romp", c: "Aan de bovenkant", d: "Aan de binnenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'craniaal'?",   options: { a: "Richting hoofd", b: "Richting voeten", c: "Richting rug", d: "Richting buik" }, correct: "a", image: "" },
+        { text: "Wat betekent 'caudaal'?",    options: { a: "Richting hoofd", b: "Richting voeten", c: "Richting hart", d: "Richting buik" }, correct: "b", image: "" },
+        { text: "Wat betekent 'superficiaal'?", options: { a: "Aan de oppervlakte", b: "Diep in het lichaam", c: "Aan de onderkant", d: "Aan de achterkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'diep' of 'profundus'?", options: { a: "Aan de oppervlakte", b: "Dieper in het lichaam", c: "Aan de bovenkant", d: "Aan de buitenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'palmair'?",    options: { a: "Handpalmzijde", b: "Handrugzijde", c: "Voetzoolzijde", d: "Voetbovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'plantair'?",   options: { a: "Voetzoolzijde", b: "Voetbovenkant", c: "Kuitzijde", d: "Scheenbeenzijde" }, correct: "a", image: "" },
+        { text: "Wat betekent 'radiaal'?",    options: { a: "Aan de kant van de duim", b: "Aan de kant van de pink", c: "Aan de voetzoolzijde", d: "Aan de handpalmzijde" }, correct: "a", image: "" },
+        { text: "Wat betekent 'ulnair'?",     options: { a: "Aan de kant van de duim", b: "Aan de kant van de pink", c: "Aan de zijkant van de romp", d: "Aan de voetzoolzijde" }, correct: "b", image: "" },
+        { text: "Wat betekent 'tibiaal'?",    options: { a: "Aan de kant van het scheenbeen", b: "Aan de kant van het kuitbeen", c: "Aan de voetzoolzijde", d: "Aan de knie" }, correct: "a", image: "" },
+        { text: "Wat betekent 'fibulair' (of peroneaal)?", options: { a: "Aan de scheenbeenzijde", b: "Aan de kuitbeenzijde", c: "Aan de binnenkant van het been", d: "Aan de knie" }, correct: "b", image: "" }
+      ]
+    };
+  </script>
+
+  <script>
+    const data = window.plaatsbepalende_uitdrukkingen;
+
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div'); card.className='card'; card.dataset.index=i;
+      const kop=document.createElement('div'); kop.className='vraag-kop'; kop.textContent=`Vraag ${i+1}: ${vraag.text}`; card.appendChild(kop);
+      const w=document.createElement('div'); const naam=`q${i}`;
+      Object.keys(vraag.options).forEach(k=>{
+        const id=`${naam}_${k}`;
+        const r=document.createElement('div'); r.className='optie'; r.dataset.key=k;
+        const input=document.createElement('input'); input.type='radio'; input.name=naam; input.id=id; input.value=k;
+        const label=document.createElement('label'); label.setAttribute('for', id); label.innerHTML=`<strong>${k.toUpperCase()}.</strong> ${vraag.options[k]}`;
+        r.appendChild(input); r.appendChild(label); w.appendChild(r);
+      });
+      const fb=document.createElement('div'); fb.className='feedback'; fb.style.display='none';
+      card.appendChild(w); card.appendChild(fb); return card;
+    }
+
+    function render(){
+      vragenEl.innerHTML=''; data.questions.forEach((v,i)=>vragenEl.appendChild(maakVraag(v,i)));
+      scorevak.style.display='none'; scorevak.textContent=''; updateProgress();
+    }
+    function getAantalBeantwoord(){ let c=0; data.questions.forEach((_,i)=>{ if(document.querySelector(`input[name="q${i}"]:checked`)) c++;}); return c; }
+    function updateProgress(){ progressEl.textContent=`Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`; }
+
+    function controleerAntwoorden(){
+      let juist=0, totaal=data.questions.length;
+      data.questions.forEach((vraag,i)=>{
+        const card=document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen=document.querySelector(`input[name="q${i}"]:checked`);
+        const fb=card.querySelector('.feedback');
+        card.querySelectorAll('.optie').forEach(o=>o.classList.remove('juiste'));
+        if(!gekozen){ fb.style.display='block'; fb.className='feedback fout'; fb.textContent='Nog geen antwoord gekozen.'; return; }
+        const ok=gekozen.value===vraag.correct;
+        if(ok){ juist++; fb.style.display='block'; fb.className='feedback goed'; fb.textContent='Goed!'; }
+        else { fb.style.display='block'; fb.className='feedback fout'; fb.textContent=`Fout. Juiste antwoord: (${vraag.correct.toUpperCase()}) ${vraag.options[vraag.correct]}`; }
+        const juisteRow=card.querySelector(`.optie[data-key="${vraag.correct}"]`); if(juisteRow) juisteRow.classList.add('juiste');
+        card.querySelectorAll('input[type="radio"]').forEach(inp=>inp.disabled=true);
+      });
+      scorevak.style.display='block'; scorevak.textContent=`Score: ${juist} / ${totaal} (${Math.round(juist/totaal*100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', e=>{ if(e.target.matches('input[type="radio"]')) updateProgress(); });
+
+    render();
+  </script>
+</body>
+</html>

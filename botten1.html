@@ -1,0 +1,284 @@
+<<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skelet – Toets (Latijn)</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <!-- DATA: 20 vragen skelet (Latijn) -->
+  <script>
+    window.skelet_toets = {
+      title: "Het menselijke skelet (Latijn)",
+      description: "20 basisvragen over botten in het Latijn.",
+      questions: [
+        {
+          text: "Hoe heet het borstbeen in het Latijn?",
+          options: { a: "Sternum", b: "Scapula", c: "Clavicula", d: "Mandibula" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het sleutelbeen?",
+          options: { a: "Clavicula", b: "Scapula", c: "Humerus", d: "Radius" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het schouderblad?",
+          options: { a: "Scapula", b: "Sternum", c: "Pelvis", d: "Patella" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het dijbeen?",
+          options: { a: "Fibula", b: "Femur", c: "Tibia", d: "Ulna" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet de knieschijf?",
+          options: { a: "Patella", b: "Pelvis", c: "Costae", d: "Tarsus" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heten de ribben?",
+          options: { a: "Vertebrae", b: "Costae", c: "Carpi", d: "Metatarsi" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet de wervelkolom?",
+          options: { a: "Columna vertebralis", b: "Cranium", c: "Sternum", d: "Os coxae" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet de schedel?",
+          options: { a: "Cranium", b: "Mandibula", c: "Maxilla", d: "Os frontale" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het onderkaaksbeen?",
+          options: { a: "Maxilla", b: "Mandibula", c: "Zygomaticum", d: "Occipitale" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet het bovenkaaksbeen?",
+          options: { a: "Maxilla", b: "Mandibula", c: "Os temporale", d: "Os nasale" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het grote onderbeenbot (scheenbeen)?",
+          options: { a: "Fibula", b: "Tibia", c: "Ulna", d: "Radius" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet het kleine onderbeenbot (kuitbeen)?",
+          options: { a: "Fibula", b: "Tibia", c: "Radius", d: "Ulna" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het grootste bot van de arm (bovenarm)?",
+          options: { a: "Humerus", b: "Radius", c: "Ulna", d: "Carpus" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heet het spaakbeen (duimzijde) in de onderarm?",
+          options: { a: "Ulna", b: "Radius", c: "Humerus", d: "Scapula" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet de ellepijp (pinkzijde) in de onderarm?",
+          options: { a: "Radius", b: "Ulna", c: "Tibia", d: "Fibula" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet de handwortel (groep botjes in de pols)?",
+          options: { a: "Carpus", b: "Metacarpus", c: "Phalanges manus", d: "Tarsus" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heten de middenhandsbeentjes?",
+          options: { a: "Carpus", b: "Metacarpus", c: "Tarsus", d: "Metatarsus" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet de voetwortel (enkel/voetwortelbeentjes)?",
+          options: { a: "Tarsus", b: "Carpus", c: "Metacarpus", d: "Phalanges" },
+          correct: "a", image: ""
+        },
+        {
+          text: "Hoe heten de teen- en vingerkootjes?",
+          options: { a: "Metatarsus", b: "Phalanges", c: "Costae", d: "Vertebrae" },
+          correct: "b", image: ""
+        },
+        {
+          text: "Hoe heet het bekken (heupbeenring)?",
+          options: { a: "Pelvis", b: "Sternum", c: "Clavicula", d: "Os frontale" },
+          correct: "a", image: ""
+        }
+      ]
+    };
+  </script>
+
+  <!-- ZELFDE RENDERER ALS JE ANDERE TOETSEN -->
+  <script>
+    const data = window.skelet_toets;
+
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        // reset markeringen
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        // vergrendel
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Onderbeenspieren – Toets</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, Arial, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 900px; margin: 32px auto; padding: 16px; }
+    h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+    .sub { color:#222; margin: 0 0 18px 0; }
+    .card { border:1px solid var(--grijs); border-radius: 10px; padding:14px; margin:10px 0; background:#fff; }
+    .vraag-kop { font-weight: 600; margin-bottom: 8px; }
+    .optie { display:flex; gap:10px; padding:6px 8px; border-radius:8px; }
+    .optie:hover { background:#fafafa; }
+    .feedback { margin-top:8px; font-weight:600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline:2px solid var(--groen); border-radius:8px; }
+    .knoppen { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
+    button { border:2px solid var(--zwart); background:#fff; color:#000; padding:8px 14px; border-radius:10px; font-weight:700; cursor:pointer; transition:.2s; }
+    button:hover { background:#000; color:#fff; }
+    .score { border:1px solid var(--grijs); border-radius:10px; padding:10px 12px; font-weight:700; display:none; }
+    .progress { font-weight:600; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="titel"></h1>
+    <p class="sub" id="beschrijving"></p>
+    <div id="vragen"></div>
+    <div class="knoppen">
+      <button id="controleer" type="button">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="scorevak" class="score"></div>
+  </div>
+
+  <!-- DATA -->
+  <script>
+    window.onderbeen_spieren_toets = {
+      title: "Onderbeenspieren (voor- en achterzijde)",
+      description: "Vragen over tibialis anterior/posterior, extensoren, flexoren en peroneusspieren.",
+      questions: [
+        {
+          text: "Waar ligt de m. tibialis anterior?",
+          options: {
+            a: "Aan de voorzijde van het onderbeen, naast de scheen",
+            b: "Aan de achterkant van het onderbeen",
+            c: "Aan de laterale zijde van het bovenbeen",
+            d: "Onder de voet"
+          },
+          correct: "a"
+        },
+        {
+          text: "Wat is de belangrijkste beweging van m. tibialis anterior?",
+          options: {
+            a: "Plantairflexie van de enkel",
+            b: "Dorsaalflexie van de enkel",
+            c: "Flexie van de knie",
+            d: "Extensie van de tenen"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier strekt (extendeert) de tenen II–V?",
+          options: {
+            a: "Flexor digitorum longus",
+            b: "Extensor digitorum longus",
+            c: "Extensor hallucis longus",
+            d: "Peroneus brevis"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier strekt de grote teen (hallux)?",
+          options: {
+            a: "Extensor hallucis longus",
+            b: "Flexor hallucis longus",
+            c: "Extensor digitorum longus",
+            d: "Peroneus longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Wat doet de m. peroneus (fibularis) longus vooral?",
+          options: {
+            a: "Inversie van de voet",
+            b: "Eversie van de voet",
+            c: "Strekken van de tenen",
+            d: "Buigen van de knie"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke van deze hoort bij de laterale groep onderbeenspieren?",
+          options: {
+            a: "Peroneus longus",
+            b: "Tibialis anterior",
+            c: "Flexor hallucis longus",
+            d: "Tibialis posterior"
+          },
+          correct: "a"
+        },
+        {
+          text: "Wat is de functie van m. peroneus brevis?",
+          options: {
+            a: "Eversie van de voet",
+            b: "Dorsaalflexie van de voet",
+            c: "Flexie van de tenen",
+            d: "Inversie van de voet"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier buigt (flexeert) de tenen II–V?",
+          options: {
+            a: "Extensor digitorum longus",
+            b: "Flexor digitorum longus",
+            c: "Extensor hallucis longus",
+            d: "Peroneus longus"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier buigt de grote teen (hallux)?",
+          options: {
+            a: "Extensor hallucis longus",
+            b: "Flexor hallucis longus",
+            c: "Tibialis anterior",
+            d: "Peroneus brevis"
+          },
+          correct: "b"
+        },
+        {
+          text: "Welke spier ligt dieper aan de achterkant en zorgt voor inversie + plantairflexie?",
+          options: {
+            a: "Tibialis posterior",
+            b: "Tibialis anterior",
+            c: "Extensor digitorum longus",
+            d: "Peroneus longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke beweging hoort het beste bij tibialis posterior?",
+          options: {
+            a: "Inversie en plantairflexie",
+            b: "Eversie en dorsaalflexie",
+            c: "Alleen tenen strekken",
+            d: "Knie buigen"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke twee spieren werken samen om de voet naar buiten te kantelen (eversie)?",
+          options: {
+            a: "Peroneus longus en peroneus brevis",
+            b: "Tibialis anterior en tibialis posterior",
+            c: "Extensor digitorum longus en flexor digitorum longus",
+            d: "Flexor hallucis longus en extensor hallucis longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier helpt de voet naar binnen te kantelen (inversie) samen met tibialis anterior?",
+          options: {
+            a: "Tibialis posterior",
+            b: "Peroneus brevis",
+            c: "Extensor digitorum longus",
+            d: "Peroneus longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier ligt aan de voorzijde en loopt naar de dorsum (bovenkant) van de voet en tenen?",
+          options: {
+            a: "Extensor digitorum longus",
+            b: "Flexor digitorum longus",
+            c: "Tibialis posterior",
+            d: "Peroneus longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier is belangrijk voor afzet bij lopen omdat hij de grote teen krachtig buigt?",
+          options: {
+            a: "Flexor hallucis longus",
+            b: "Extensor digitorum longus",
+            c: "Peroneus brevis",
+            d: "Tibialis anterior"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier helpt mee de voet in neutrale stand te houden door onder de voet door te lopen naar mediaal?",
+          options: {
+            a: "Peroneus longus",
+            b: "Extensor hallucis longus",
+            c: "Tibialis anterior",
+            d: "Flexor digitorum longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke van deze spieren ligt NIET in het voorste compartiment?",
+          options: {
+            a: "Tibialis anterior",
+            b: "Extensor digitorum longus",
+            c: "Extensor hallucis longus",
+            d: "Flexor hallucis longus"
+          },
+          correct: "d"
+        },
+        {
+          text: "Welke spier loopt achter de mediale enkel (malleolus medialis) naar de voetzool?",
+          options: {
+            a: "Flexor digitorum longus",
+            b: "Extensor digitorum longus",
+            c: "Peroneus brevis",
+            d: "Extensor hallucis longus"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spiergroep zorgt vooral voor dorsaalflexie van de enkel?",
+          options: {
+            a: "Voorste onderbeenspieren (tibialis anterior, extensoren)",
+            b: "Achterste diepe onderbeenspieren",
+            c: "Peroneusspieren",
+            d: "Kuitspieren (gastrocnemius, soleus)"
+          },
+          correct: "a"
+        },
+        {
+          text: "Welke spier hoort bij de diepe flexoren aan de achterzijde van het onderbeen?",
+          options: {
+            a: "Tibialis posterior",
+            b: "Extensor hallucis longus",
+            c: "Peroneus longus",
+            d: "Tibialis anterior"
+          },
+          correct: "a"
+        }
+      ]
+    };
+  </script>
+
+  <!-- RENDER SCRIPT -->
+  <script>
+    const data = window.onderbeen_spieren_toets;
+
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = data.title || '';
+    beschrijvingEl.textContent = data.description || '';
+
+    function maakVraag(vraag, i) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${i + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${i}`;
+
+      Object.keys(vraag.options).forEach(key => {
+        const id = `${naam}_${key}`;
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${vraag.options[key]}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      });
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      data.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+      updateProgress();
+    }
+
+    function getAantalBeantwoord() {
+      let c = 0;
+      data.questions.forEach((_, i) => {
+        if (document.querySelector(`input[name="q${i}"]:checked`)) c++;
+      });
+      return c;
+    }
+
+    function updateProgress() {
+      progressEl.textContent = `Beantwoord: ${getAantalBeantwoord()}/${data.questions.length}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = data.questions.length;
+
+      data.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        // reset markeringen
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const correctKey = vraag.correct;
+        const goed = gekozen.value === correctKey;
+
+        if (goed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = `Fout. Juiste antwoord: (${correctKey.toUpperCase()}) ${vraag.options[correctKey]}`;
+        }
+
+        const juisteRow = card.querySelector(`.optie[data-key="${correctKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        // vergrendel keuzes
+        card.querySelectorAll('input[type="radio"]').forEach(inp => inp.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', render);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    render();
+  </script>
+</body>
+</html>
+
+
+

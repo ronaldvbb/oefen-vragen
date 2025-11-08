@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plaatsbepalende uitdrukkingen – Toets</title>
+  <style>
+    :root { --zwart:#000; --grijs:#e9e9e9; --groen:#1b8f3a; --rood:#b02222; --blauw:#0f62fe; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, Arial, sans-serif; background: #fff; color: var(--zwart);
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 900px; margin: 40px auto; padding: 24px; 
+    }
+    h1 { margin: 0 0 8px 0; }
+    .sub { color: #333; margin-bottom: 24px; }
+    .card {
+      border: 1px solid var(--grijs); border-radius: 12px; padding: 18px; margin-bottom: 16px;
+      background: #fff;
+    }
+    .vraag-kop { font-weight: 600; margin-bottom: 10px; }
+    .optie { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-radius: 8px; }
+    .optie input { margin-top: 3px; }
+    .optie label { cursor: pointer; flex: 1; }
+    .optie:hover { background: #fafafa; }
+    .feedback { margin-top: 8px; font-weight: 600; }
+    .goed { color: var(--groen); }
+    .fout { color: var(--rood); }
+    .juiste { outline: 2px solid var(--groen); border-radius: 8px; }
+    .knoppen { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    button {
+      border: 2px solid var(--zwart); background: #fff; color: var(--zwart);
+      padding: 10px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: .2s;
+    }
+    button:hover { background: var(--zwart); color: #fff; transform: translateY(-1px); }
+    .score {
+      margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: #fff; border: 1px solid var(--grijs);
+      font-weight: 700;
+    }
+    .meta { font-size: 14px; color: #444; margin-top: 6px; }
+    .divider { height: 1px; background: var(--grijs); margin: 24px 0; }
+    .topbar { display:flex; align-items:center; justify-content: space-between; gap: 16px; margin-bottom: 10px;}
+    .progress { font-weight:600; color:#333; }
+    @media (prefers-reduced-motion: no-preference) {
+      .card { transition: box-shadow .2s; }
+      .card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 id="titel">Plaatsbepalende uitdrukkingen</h1>
+      <div class="progress" id="progress"></div>
+    </div>
+    <p class="sub" id="beschrijving">Leer de belangrijkste richtingen van het menselijk lichaam.</p>
+
+    <div id="vragen"></div>
+
+    <div class="knoppen">
+      <button id="controleer">Controleer antwoorden</button>
+      <button id="opnieuw" type="button">Opnieuw</button>
+    </div>
+
+    <div id="scorevak" class="score" style="display:none;"></div>
+    <div class="meta">Tip: je kunt ook per vraag op het label klikken om een optie te kiezen.</div>
+    <div class="divider"></div>
+    <small>© Toetsgenerator (simpel, client-side, geen externe libraries). Bestand is volledig offline te gebruiken.</small>
+  </div>
+
+  <script>
+    // --- JOUW DATA (ongewijzigd, maar omgezet naar een volledige const) ---
+    const quiz = {
+      title: "Plaatsbepalende uitdrukkingen",
+      description: "Leer de belangrijkste richtingen van het menselijk lichaam.",
+      questions: [
+        { text: "Wat betekent 'superior'?",   options: { a: "Bovenkant", b: "Onderkant", c: "Achterkant", d: "Voorkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'inferior'?",   options: { a: "Bovenkant", b: "Onderkant", c: "Binnenkant", d: "Zijkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'mediaal'?",    options: { a: "Dicht bij het midden van het lichaam", b: "Ver van het midden af", c: "Aan de achterkant", d: "Aan de bovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'lateraal'?",   options: { a: "Aan de binnenkant", b: "Aan de zijkant", c: "Aan de onderkant", d: "Aan de bovenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'anterior'?",   options: { a: "Voorkant", b: "Achterkant", c: "Zijkant", d: "Bovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'posterior'?",  options: { a: "Voorkant", b: "Achterkant", c: "Binnenkant", d: "Buitenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'ventraal' bij mensen?", options: { a: "Aan de buikzijde", b: "Aan de rugzijde", c: "Aan de zijkant", d: "Aan de onderkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'dorsaal' bij mensen?",  options: { a: "Aan de rugzijde", b: "Aan de buikzijde", c: "Aan de bovenkant", d: "Aan de onderkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'proximaal'?",  options: { a: "Dicht bij de romp", b: "Ver van de romp", c: "Aan de voorkant", d: "Aan de zijkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'distaal'?",    options: { a: "Dicht bij de romp", b: "Ver van de romp", c: "Aan de bovenkant", d: "Aan de binnenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'craniaal'?",   options: { a: "Richting hoofd", b: "Richting voeten", c: "Richting rug", d: "Richting buik" }, correct: "a", image: "" },
+        { text: "Wat betekent 'caudaal'?",    options: { a: "Richting hoofd", b: "Richting voeten", c: "Richting hart", d: "Richting buik" }, correct: "b", image: "" },
+        { text: "Wat betekent 'superficiaal'?", options: { a: "Aan de oppervlakte", b: "Diep in het lichaam", c: "Aan de onderkant", d: "Aan de achterkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'diep' of 'profundus'?", options: { a: "Aan de oppervlakte", b: "Dieper in het lichaam", c: "Aan de bovenkant", d: "Aan de buitenkant" }, correct: "b", image: "" },
+        { text: "Wat betekent 'palmair'?",    options: { a: "Handpalmzijde", b: "Handrugzijde", c: "Voetzoolzijde", d: "Voetbovenkant" }, correct: "a", image: "" },
+        { text: "Wat betekent 'plantair'?",   options: { a: "Voetzoolzijde", b: "Voetbovenkant", c: "Kuitzijde", d: "Scheenbeenzijde" }, correct: "a", image: "" },
+        { text: "Wat betekent 'radiaal'?",    options: { a: "Aan de kant van de duim", b: "Aan de kant van de pink", c: "Aan de voetzoolzijde", d: "Aan de handpalmzijde" }, correct: "a", image: "" },
+        { text: "Wat betekent 'ulnair'?",     options: { a: "Aan de kant van de duim", b: "Aan de kant van de pink", c: "Aan de zijkant van de romp", d: "Aan de voetzoolzijde" }, correct: "b", image: "" },
+        { text: "Wat betekent 'tibiaal'?",    options: { a: "Aan de kant van het scheenbeen", b: "Aan de kant van het kuitbeen", c: "Aan de voetzoolzijde", d: "Aan de knie" }, correct: "a", image: "" },
+        { text: "Wat betekent 'fibulair' (of peroneaal)?", options: { a: "Aan de scheenbeenzijde", b: "Aan de kuitbeenzijde", c: "Aan de binnenkant van het been", d: "Aan de knie" }, correct: "b", image: "" }
+      ]
+    };
+
+    // --- Rendering ---
+    const titelEl = document.getElementById('titel');
+    const beschrijvingEl = document.getElementById('beschrijving');
+    const vragenEl = document.getElementById('vragen');
+    const scorevak = document.getElementById('scorevak');
+    const btnCheck = document.getElementById('controleer');
+    const btnReset = document.getElementById('opnieuw');
+    const progressEl = document.getElementById('progress');
+
+    titelEl.textContent = quiz.title;
+    beschrijvingEl.textContent = quiz.description;
+
+    function maakVraag(vraag, index) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.setAttribute('data-index', index);
+
+      const kop = document.createElement('div');
+      kop.className = 'vraag-kop';
+      kop.textContent = `Vraag ${index + 1}: ${vraag.text}`;
+      card.appendChild(kop);
+
+      const optiesWrap = document.createElement('div');
+      const naam = `q${index}`;
+
+      for (const key of Object.keys(vraag.options)) {
+        const value = vraag.options[key];
+        const id = `${naam}_${key}`;
+
+        const row = document.createElement('div');
+        row.className = 'optie';
+        row.dataset.key = key;
+
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = naam;
+        input.id = id;
+        input.value = key;
+
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.innerHTML = `<strong>${key.toUpperCase()}.</strong> ${value}`;
+
+        row.appendChild(input);
+        row.appendChild(label);
+        optiesWrap.appendChild(row);
+      }
+
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.style.display = 'none';
+
+      card.appendChild(optiesWrap);
+      card.appendChild(fb);
+      return card;
+    }
+
+    function render() {
+      vragenEl.innerHTML = '';
+      quiz.questions.forEach((v, i) => vragenEl.appendChild(maakVraag(v, i)));
+      updateProgress();
+      scorevak.style.display = 'none';
+      scorevak.textContent = '';
+    }
+
+    function getAantalBeantwoord() {
+      let count = 0;
+      quiz.questions.forEach((_, i) => {
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        if (gekozen) count++;
+      });
+      return count;
+    }
+
+    function updateProgress() {
+      const totaal = quiz.questions.length;
+      const ingevuld = getAantalBeantwoord();
+      progressEl.textContent = `Beantwoord: ${ingevuld}/${totaal}`;
+    }
+
+    function controleerAntwoorden() {
+      let juist = 0;
+      const totaal = quiz.questions.length;
+
+      quiz.questions.forEach((vraag, i) => {
+        const card = document.querySelector(`.card[data-index="${i}"]`);
+        const gekozen = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = card.querySelector('.feedback');
+
+        // reset eerdere markeringen
+        card.querySelectorAll('.optie').forEach(o => o.classList.remove('juiste'));
+
+        if (!gekozen) {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          feedback.textContent = 'Nog geen antwoord gekozen.';
+          return;
+        }
+
+        const juistKey = vraag.correct;
+        const isGoed = gekozen.value === juistKey;
+
+        if (isGoed) {
+          juist++;
+          feedback.style.display = 'block';
+          feedback.className = 'feedback goed';
+          feedback.textContent = 'Goed!';
+        } else {
+          feedback.style.display = 'block';
+          feedback.className = 'feedback fout';
+          const juisteTekst = vraag.options[juistKey];
+          feedback.textContent = `Fout. Juiste antwoord: (${juistKey.toUpperCase()}) ${juisteTekst}`;
+        }
+
+        // markeer juiste optie visueel
+        const juisteRow = card.querySelector(`.optie[data-key="${juistKey}"]`);
+        if (juisteRow) juisteRow.classList.add('juiste');
+
+        // vergrendel keuzes na controleren
+        card.querySelectorAll('input[type="radio"]').forEach(input => input.disabled = true);
+      });
+
+      scorevak.style.display = 'block';
+      scorevak.textContent = `Score: ${juist} / ${totaal} (${Math.round((juist / totaal) * 100)}%)`;
+    }
+
+    function resetToets() {
+      render();
+    }
+
+    // events
+    btnCheck.addEventListener('click', controleerAntwoorden);
+    btnReset.addEventListener('click', resetToets);
+    document.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="radio"]')) updateProgress();
+    });
+
+    // initial render
+    render();
+  </script>
+</body>
+</html>
